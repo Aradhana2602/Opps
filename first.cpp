@@ -51,10 +51,10 @@ Student(){      //default constructor
 };
 
 int main(){
-    Student s("Sumaanyu",19), s2("Shreyash",20), s3;
-    Student shreyash(s2);
+    Student s("Aradhana",19), s2("Jyoti",20), s3;
+    Student Jyoti(s2);
     s.display(); // calling parameterized constructor
-    shreyash.display(); // calling copy constructor
+    Jyoti.display(); // calling copy constructor
     s3.display(); // calling default constructor
     Student newS(move(s));
     newS.display();
