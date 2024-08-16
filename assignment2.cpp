@@ -1,107 +1,168 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <stdexcept>
+/*
+Experiment Number 2 : Develop a program in C++ to create a database of
+student’s information system
+containing the following information: Name, Roll number, Class, Division,
+Date of Birth, Blood group,
+Contactaddress, Telephone number, Driving license no. and other. Construct
+the database with
+suitable member functions. Make use of constructor, default constructor,
+copy constructor,
+destructor, static member functions, friend class, this pointer, inline
+code and dynamic
+memory allocation operators-new and delete as well as exception handling.
+*/
 
-class Student {
-private:
-    std::string name;
-    int rollNumber;
-    std::string className;
-    char division;
-    std::string dateOfBirth;
-    std::string bloodGroup;
-    std::string contactAddress;
-    std::string telephoneNumber;
-    std::string drivingLicenseNumber;
 
-public:
-    // Default constructor
-    Student() 
-        : rollNumber(0), division('A') {}
 
-    // Parameterized constructor
-    Student(std::string name, int rollNumber, std::string className, char division, std::string dateOfBirth,
-            std::string bloodGroup, std::string contactAddress, std::string telephoneNumber, std::string drivingLicenseNumber) 
-        : name(name), rollNumber(rollNumber), className(className), division(division), dateOfBirth(dateOfBirth),
-          bloodGroup(bloodGroup), contactAddress(contactAddress), telephoneNumber(telephoneNumber), drivingLicenseNumber(drivingLicenseNumber) {}
+#include<iostream>
+#include<string.h>
+using namespace std;
 
-    // Copy constructor
-    Student(const Student &other)
-        : name(other.name), rollNumber(other.rollNumber), className(other.className), division(other.division),
-          dateOfBirth(other.dateOfBirth), bloodGroup(other.bloodGroup), contactAddress(other.contactAddress),
-          telephoneNumber(other.telephoneNumber), drivingLicenseNumber(other.drivingLicenseNumber) {}
+class StudData;
 
-    // Destructor
-    ~Student() {
-        std::cout << "Destructor called for student: " << name << std::endl;
+class Student{
+    string name;
+    int roll_no;
+    string cls;
+    char* division;
+    string dob;
+    char* bloodgroup;
+    static int count;
+
+    public:
+
+    Student()          // Default Constructor
+    {
+        name="";
+        roll_no=0;
+        cls="";
+        division=new char;
+        dob="dd/mm/yyyy";
+        bloodgroup=new char[4];
     }
 
-    // Friend class declaration
-    friend class StudentDatabase;
+    ~Student()
+    {
+        delete division;
+        delete[] bloodgroup;
+    }
 
-    // Inline member functions
-    inline void display() const {
-        std::cout << "Name: " << name << "\nRoll Number: " << rollNumber << "\nClass: " << className << "\nDivision: " << division 
-                  << "\nDate of Birth: " << dateOfBirth << "\nBlood Group: " << bloodGroup << "\nContact Address: " << contactAddress 
-                  << "\nTelephone Number: " << telephoneNumber << "\nDriving License Number: " << drivingLicenseNumber << std::endl;
+    static int getCount()
+    {
+        return count;
+    }
+
+    void getData(StudData*);
+    void dispData(StudData*);
+};
+
+class StudData{
+    string caddress;
+    long int* telno;
+    long int* dlno;
+    friend class Student;
+
+    public:
+
+    StudData()
+    {
+        caddress="";
+        telno=new long;
+        dlno=new long;
+    }
+    
+    ~StudData()
+    {
+        delete telno;
+        delete dlno;
+    }
+
+    void getStudData()
+    {
+        cout<<"Enter Contact Address : ";
+        cin.get();
+        getline(cin,caddress);
+        cout<<"Enter Telephone Number : ";
+        cin>>*telno;
+        cout<<"Enter Driving License Number : ";
+        cin>>*dlno;
+    }
+
+    void dispStudData()
+    {
+        cout<<"Contact Address : "<<caddress<<endl;
+        cout<<"Telephone Number : "<<*telno<<endl;
+        cout<<"Driving License Number : "<<*dlno<<endl;
     }
 };
 
-class StudentDatabase {
-private:
-    std::vector<Student*> students;
-    static int studentCount;
+inline void Student::getData(StudData* st)
+{
+    cout<<"Enter Student Name : ";
+    getline(cin,name);
+    cout<<"Enter Roll Number : ";
+    cin>>roll_no;
+    cout<<"Enter Class : ";
+    cin.get();
+    getline(cin,cls);
+    cout<<"Enter Division : ";
+    cin>>division;
+    cout<<"Enter Date of Birth : ";
+    cin.get();
+    getline(cin,dob);
+    cout<<"Enter Blood Group : ";
+    cin>>bloodgroup;
+    st->getStudData();
+    count++;
+}
 
-public:
-    // Constructor
-    StudentDatabase() {}
+inline void Student::dispData(StudData* st1)
+{
+    cout<<"Student Name : "<<name<<endl;
+    cout<<"Roll Number : "<<roll_no<<endl;
+    cout<<"Class : "<<cls<<endl;
+    cout<<"Division : "<<division<<endl;
+    cout<<"Date of Birth : "<<dob<<endl;
+    cout<<"Blood Group : "<<bloodgroup<<endl;
+    st1->dispStudData();
+}
 
-    // Destructor
-    ~StudentDatabase() {
-        for (Student* student : students) {
-            delete student;
-        }
+int Student::count;
+
+int main()
+{
+    Student* stud1[100];
+    StudData* stud2[100];
+    int n=0;
+    char ch;
+
+    do
+    {
+        stud1[n]=new Student;
+        stud2[n]=new StudData;
+        stud1[n]->getData(stud2[n]);
+        n++;
+        cout<<"Do you want to add another student (y/n) : ";
+        cin>>ch;
+        cin.get();
+    } while (ch=='y' || ch=='Y');
+
+    for(int i=0;i<n;i++)
+    {
+        cout<<"---------------------------------------------------------------"<<endl;
+        stud1[i]->dispData(stud2[i]);
     }
 
-    // Static member function
-    static int getStudentCount() {
-        return studentCount;
+    cout<<"---------------------------------------------------------------"<<endl;
+    cout<<"Total Students : "<<Student::getCount();
+    cout<<endl<<"---------------------------------------------------------------"<<endl;
+
+    for(int i=0;i<n;i++)
+    {
+        delete stud1[i];
+        delete stud2[i];
     }
-
-    // Function to add a student
-    void addStudent(std::string name, int rollNumber, std::string className, char division, std::string dateOfBirth,
-                    std::string bloodGroup, std::string contactAddress, std::string telephoneNumber, std::string drivingLicenseNumber) {
-        try {
-            Student* newStudent = new Student(name, rollNumber, className, division, dateOfBirth, bloodGroup, contactAddress, telephoneNumber, drivingLicenseNumber);
-            students.push_back(newStudent);
-            studentCount++;
-        } catch (const std::bad_alloc &e) {
-            std::cerr << "Allocation failed: " << e.what() << std::endl;
-        }
-    }
-
-    // Function to display all students
-    void displayAllStudents() const {
-        for (const Student* student : students) {
-            student->display();
-            std::cout << std::endl;
-        }
-    }
-};
-
-// Initialize static member
-int StudentDatabase::studentCount = 0;
-
-int main() {
-    StudentDatabase db;
-
-    db.addStudent("John Doe", 1, "10th Grade", 'A', "2000-01-01", "O+", "123 Main St", "555-1234", "DL123456");
-    db.addStudent("Jane Smith", 2, "11th Grade", 'B', "1999-02-02", "A+", "456 Elm St", "555-5678", "DL654321");
-
-    std::cout << "Total number of students: " << StudentDatabase::getStudentCount() << std::endl;
-
-    db.displayAllStudents();
+    
 
     return 0;
 }
